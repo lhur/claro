@@ -171,6 +171,7 @@ class DetailPokemon extends Component {
 
   clearCarrinho = () => {
     this.props.clearPokemon()
+    this.setState({totally: '0'})
   }
 
  
