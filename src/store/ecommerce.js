@@ -12,7 +12,9 @@ export const Types = {
   POKECART: 'ecommerce/POKECART',
   POKECART_FAIL: 'ecommerce/POKECART_FAIL',
 
+  TOTAL: 'ecommerce/TOTAL',
   CLEAR_POKEMON: 'ecommerce/CLEAR_POKEMON'
+
 };
 
 // Reducer
@@ -21,6 +23,7 @@ const initialState = {
   pokeall: [],
   pokedetail: [],
   pokecart: [],
+  total: []
 };
 
 export default function reducer(state = initialState, action) {
@@ -57,6 +60,11 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         pokecart: []
+      };
+    case Types.TOTAL:
+      return {
+        ...state,
+        total: action.payload
       };
     default:
       return state;
@@ -123,10 +131,26 @@ export async function pokeCart(values, callbackSuccess, callbackFail) {
   }
 }
 
+
 export function clearPokemon(){
   return function(dispatch){
     dispatch({type: Types.CLEAR_POKEMON});
   }
 }
+
+export async function totalCart(values, callbackSuccess, callbackFail) {
+  return function (dispatch) {
+    let total = values;
+    dispatch(setLoading(true))
+     dispatch({
+        type: Types.TOTAL,
+        payload: total
+      });
+      // callbackSuccess();
+    dispatch(setLoading(false));
+  }
+}
+
+
 
 

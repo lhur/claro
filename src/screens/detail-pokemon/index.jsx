@@ -17,12 +17,14 @@ class DetailPokemon extends Component {
       super(props);
       this.state = {
         pokeCart: [],
-        amount: '1'
+        amount: '1',
+        totally: ''
       }
   };
   
   componentDidMount() {
 
+    this.totatCart()
     let obj = this.props.history.location.pathname.split('/')[2]
 
     this.props.detailPokemon(obj,
@@ -61,6 +63,10 @@ class DetailPokemon extends Component {
   addToCart = (pokemon) => {
     let attrib = pokemon
 
+    let amount = this.state.amount
+    let price = attrib.order
+    let total = parseInt(amount) * price
+
     let pokeArray = {
       name: attrib.name,    
       weight: attrib.weight,
@@ -68,7 +74,8 @@ class DetailPokemon extends Component {
       height: attrib.height,
       order: attrib.order,
       id: attrib.id,
-      amount: this.state.amount
+      amount: this.state.amount,
+      total: total
     }
 
     let arrPokeCart = this.props.ecommerce.pokecart
@@ -76,7 +83,7 @@ class DetailPokemon extends Component {
     if (!arrPokeCart) {
       this.props.pokeCart(pokeArray,
         () => {
-          toast.success('Pokémon enviado para o carrinho!', {
+          toast.success('Pokémon enviado para o carrinho!', {    
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -123,12 +130,44 @@ class DetailPokemon extends Component {
       }
   } 
 
-  removePoke = () => {
-    this.props.clearPokemon()
+
+  removePoke = (index) => {
+    let carrinho = this.props.ecommerce.pokecart
+    let targeted = index
+    let pokeFilter = carrinho.splice(targeted, 1);
+
+    this.props.pokeCart(carrinho,
+      () => {
+        toast.error('Pokémon removido do carrinho!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+        },
+        (msg) => {
+          toast.error(msg, {
+            position: "top-right",                      
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+        },
+      )
   }
 
   clearCarrinho = () => {
     this.props.clearPokemon()
+  }
+
+  totatCart = () => {
+    let carrinho = this.props.ecommerce.pokecart
+    
+    let totally = carrinho.reduce((total, currentValue) => total = total + currentValue.total,0);
+    console.log(totally);
+    this.setState({totally: totally})
   }
 
   render() {
@@ -137,56 +176,59 @@ class DetailPokemon extends Component {
     let pokePhoto = this.props.history.location.pathname.split('/')[3]
     let pokeRight = parseInt(pokePhoto) + 1
     let carrinho = this.props.ecommerce.pokecart
-
-    console.log(carrinho)
-
     return (
       <div>
         <Col className="header" style={{display: 'flex', justifyContent: 'flex-end'}}>
           <Col>
             <h2 style={{color: '#FFF', fontWeight: 'bold', marginTop: '0.5rem'}} onClick={this.goToHome}>PokéShop</h2>
           </Col>
-          <Dropdown>
+          <Dropdown >
             <Dropdown.Toggle variant="hidden" id="dropdown-basic">
               <img src={Pokeball} style={{width: '2.5rem', height: '2.5rem', marginTop: '0.5rem'}} alt="pkmn"/>
             </Dropdown.Toggle>
            
-            <Dropdown.Menu>
+            <Dropdown.Menu >
               <Col md={12} style={{display: 'flex', flexDirection: 'row', padding: '1rem'}}>
-                <Col md={3}>
-                  <h7>Imagem</h7>
+                <Col md={2}>
+                  <h6>Imagem</h6>
                 </Col>
                 <Col  md={3}>
-                  <h7>Nome</h7>
+                  <h6>Nome</h6>
+                </Col>
+                <Col  md={1}>
+                  <h6>Qtd</h6>
                 </Col>
                 <Col  md={2}>
-                  <h7>Qtd</h7>
+                  <h6>Valor</h6>
                 </Col>
                 <Col  md={2}>
-                  <h7>Valor</h7>
+                  <h6>Total</h6>
                 </Col>
                 <Col  md={2}>
-                  <h7>Excluir</h7>
+                  <h6>Excluir</h6>
                 </Col>
               </Col>
               {carrinho.map((item, index) => {
                   return (
                     <Dropdown.Item key={index} href="#">
                       <Col md={12} style={{display: 'flex', flexDirection: 'row'}}>
-                        <Col md={3}>
-                          <img style={{width: '3rem', height: '3rem'}} src={`https://pokeres.bastionbot.org/images/pokemon/${item.id}.png`} alt="pkmn"/> 
+                        <Col md={2}>
+                          <img style={{width: '2rem', height: '2rem'}} src={`https://pokeres.bastionbot.org/images/pokemon/${item.id}.png`} alt="pkmn"/> 
                         </Col>
                         <Col  md={3}>
-                          <h8 style={{textTransform: 'capitalize'}}>{item.name} </h8>
+                          {item.name}
                         </Col>
-                        <Col  md={2}>
+                        <Col  md={1}>
                           {item.amount} 
                         </Col>
                         <Col  md={2}>
                           {item.order},00 
                         </Col>
                         <Col  md={2}>
-                          <img src={Trash} style={{width: '1rem', height: '1rem'}} onClick={() => this.removePoke()}  alt="excluir"/>
+                          {item.total},00 
+                        </Col>
+                        <Col  md={2}>
+                          <img src={Trash} style={{width: '1rem', height: '1rem'}} onClick={() => this.removePoke(index)}  alt="excluir"/>
                         </Col>
                       </Col>
                     </Dropdown.Item>
@@ -194,7 +236,7 @@ class DetailPokemon extends Component {
                 })
               }
               <Col md={12} style={{display: 'flex', justifyContent: 'flex-end', padding: '1rem'}}>
-                <h5>Total</h5>
+              <h5>Total: {this.state.totally},00</h5>
               </Col>
               <Col md={12} style={{display: 'flex', justifyContent: 'flex-end', padding: '1rem'}}>
                 <Button variant="outline-success" onClick={() => this.clearCarrinho()}>Limpar Carrinho</Button>
@@ -216,7 +258,7 @@ class DetailPokemon extends Component {
                     }}  
                     >
                     <Col md={12} style={{display: 'flex', justifyContent: 'center', padding: '3rem'}}>
-                      <img style={{width: '14rem', height: '14rem'}} src={`https://pokeres.bastionbot.org/images/pokemon/${pokeRight}.png`} alt="pkmn"/> 
+                      <img style={{width: '16.4rem', height: '16.4rem'}} src={`https://pokeres.bastionbot.org/images/pokemon/${pokeRight}.png`} alt="pkmn"/> 
                     </Col>
                     
                   </Col>
@@ -259,7 +301,6 @@ class DetailPokemon extends Component {
                         >
                         </input>
                       </Col>
-                      
                     </Col>
                     <Col md={12} style={{display: 'flex', justifyContent: 'center', paddingBottom: '1.5rem'}}>
                       <Button variant="outline-success" onClick={() => this.addToCart(pokemon)}>Adicionar ao carrinho!</Button>

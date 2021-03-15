@@ -8,6 +8,7 @@ import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Pokeball from '../../assets/img/pokeball.png'
 import Trash from '../../assets/img/tx.png'
+import Button from 'react-bootstrap/Button';
 
 import { Dropdown }from 'react-bootstrap'
 
@@ -39,6 +40,7 @@ class Ecommerce extends Component {
   render() {
 
     let pokemonList = this.props.ecommerce.pokeall.results
+    let carrinho = this.props.ecommerce.pokecart
 
     return (
       <div>
@@ -46,14 +48,65 @@ class Ecommerce extends Component {
           <Col>
             <h2 style={{color: '#FFF', fontWeight: 'bold', marginTop: '0.5rem'}} onClick={this.goToHome}>PokéShop</h2>
           </Col>
-          <Dropdown>
+          <Dropdown >
             <Dropdown.Toggle variant="hidden" id="dropdown-basic">
               <img src={Pokeball} style={{width: '2.5rem', height: '2.5rem', marginTop: '0.5rem'}} alt="pkmn"/>
             </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-              <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-              <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+           
+            <Dropdown.Menu >
+              <Col md={12} style={{display: 'flex', flexDirection: 'row', padding: '1rem'}}>
+                <Col md={2}>
+                  <h6>Imagem</h6>
+                </Col>
+                <Col  md={3}>
+                  <h6>Nome</h6>
+                </Col>
+                <Col  md={1}>
+                  <h6>Qtd</h6>
+                </Col>
+                <Col  md={2}>
+                  <h6>Valor</h6>
+                </Col>
+                <Col  md={2}>
+                  <h6>Total</h6>
+                </Col>
+                <Col  md={2}>
+                  <h6>Excluir</h6>
+                </Col>
+              </Col>
+              {carrinho.map((item, index) => {
+                  return (
+                    <Dropdown.Item key={index} href="#">
+                      <Col md={12} style={{display: 'flex', flexDirection: 'row'}}>
+                        <Col md={2}>
+                          <img style={{width: '2rem', height: '2rem'}} src={`https://pokeres.bastionbot.org/images/pokemon/${item.id}.png`} alt="pkmn"/> 
+                        </Col>
+                        <Col  md={3}>
+                          {item.name}
+                        </Col>
+                        <Col  md={1}>
+                          {item.amount} 
+                        </Col>
+                        <Col  md={2}>
+                          {item.order},00 
+                        </Col>
+                        <Col  md={2}>
+                          {item.total},00 
+                        </Col>
+                        <Col  md={2}>
+                          <img src={Trash} style={{width: '1rem', height: '1rem'}} onClick={() => this.removePoke(index)}  alt="excluir"/>
+                        </Col>
+                      </Col>
+                    </Dropdown.Item>
+                  )
+                })
+              }
+              <Col md={12} style={{display: 'flex', justifyContent: 'flex-end', padding: '1rem'}}>
+              <h5>Total: {this.state.totally},00</h5>
+              </Col>
+              <Col md={12} style={{display: 'flex', justifyContent: 'flex-end', padding: '1rem'}}>
+                <Button variant="outline-success" onClick={() => this.clearCarrinho()}>Limpar Carrinho</Button>
+              </Col>
             </Dropdown.Menu>
           </Dropdown>
         </Col>
