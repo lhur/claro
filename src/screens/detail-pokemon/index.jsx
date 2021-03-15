@@ -24,7 +24,7 @@ class DetailPokemon extends Component {
   
   componentDidMount() {
 
-    this.totatCart()
+    this.totalCart()
     let obj = this.props.history.location.pathname.split('/')[2]
 
     this.props.detailPokemon(obj,
@@ -51,6 +51,7 @@ class DetailPokemon extends Component {
     );
   }
 
+
   handleChange = event => {
     const {name, value} = event.target
     this.setState({ [name]: value })    
@@ -61,6 +62,7 @@ class DetailPokemon extends Component {
   }
   
   addToCart = (pokemon) => {
+
     let attrib = pokemon
 
     let amount = this.state.amount
@@ -93,6 +95,8 @@ class DetailPokemon extends Component {
 
             progress: undefined,
             });
+            this.totalCart()
+
           },
           (msg) => {
             toast.error(msg, {
@@ -118,6 +122,7 @@ class DetailPokemon extends Component {
             draggable: true,
             progress: undefined,
             });
+            this.totalCart()
           },
           (msg) => {
             toast.error(msg, {
@@ -130,6 +135,12 @@ class DetailPokemon extends Component {
       }
   } 
 
+  totalCart = () => {
+    let carrinho = this.props.ecommerce.pokecart
+    let totally = carrinho.reduce((total, currentValue) => total = total + currentValue.total,0);
+    console.log(totally);
+    this.setState({totally: totally})
+  }
 
   removePoke = (index) => {
     let carrinho = this.props.ecommerce.pokecart
@@ -147,6 +158,7 @@ class DetailPokemon extends Component {
           draggable: true,
           progress: undefined,
           });
+          this.totalCart()
         },
         (msg) => {
           toast.error(msg, {
@@ -162,14 +174,7 @@ class DetailPokemon extends Component {
     this.props.clearPokemon()
   }
 
-  totatCart = () => {
-    let carrinho = this.props.ecommerce.pokecart
-    
-    let totally = carrinho.reduce((total, currentValue) => total = total + currentValue.total,0);
-    console.log(totally);
-    this.setState({totally: totally})
-  }
-
+ 
   render() {
 
     let pokemon = this.props.ecommerce.pokedetail
