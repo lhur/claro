@@ -96,7 +96,6 @@ class DetailPokemon extends Component {
             progress: undefined,
             });
             this.totalCart()
-
           },
           (msg) => {
             toast.error(msg, {

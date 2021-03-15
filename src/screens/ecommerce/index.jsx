@@ -20,6 +20,13 @@ class Ecommerce extends Component {
       }
   };
 
+  totalCart = () => {
+    let carrinho = this.props.ecommerce.pokecart
+    let totally = carrinho.reduce((total, currentValue) => total = total + currentValue.total,0);
+    console.log(totally);
+    this.setState({totally: totally})
+  }
+
   handleChange = event => {
     const {name, value} = event.target
     this.setState({ [name]: value })    
@@ -27,6 +34,8 @@ class Ecommerce extends Component {
   
   componentDidMount() {
     this.props.listPokemons()
+    this.totalCart()
+
   }
 
   goToDetail = (values, id) => {
