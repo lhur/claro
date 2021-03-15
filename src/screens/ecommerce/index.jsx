@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import '../../assets/styles/styles.css'
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { listPokemons } from '../../store/ecommerce';
+import { listPokemons, pokeCart, clearPokemon } from '../../store/ecommerce';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Pokeball from '../../assets/img/pokeball.png'
 import Trash from '../../assets/img/tx.png'
 import Button from 'react-bootstrap/Button';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Dropdown }from 'react-bootstrap'
 
@@ -44,6 +46,38 @@ class Ecommerce extends Component {
 
   goToHome = () => {
     this.props.history.push('/')
+  }
+
+  removePoke = (index) => {
+    let carrinho = this.props.ecommerce.pokecart
+    let targeted = index
+    let pokeFilter = carrinho.splice(targeted, 1);
+
+    this.props.pokeCart(carrinho,
+      () => {
+        toast.error('Pokémon removido do carrinho!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+          this.totalCart()
+        },
+        (msg) => {
+          toast.error(msg, {
+            position: "top-right",                      
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+        },
+      )
+  }
+  clearCarrinho = () => {
+    this.props.clearPokemon()
+    this.setState({totally: '0'})
   }
   
   render() {
@@ -120,6 +154,7 @@ class Ecommerce extends Component {
           </Dropdown>
         </Col>
           <Container>
+          <ToastContainer />
             <Row> 
               {pokemonList.map((item, index) => {
                 return (
@@ -161,7 +196,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   ...bindActionCreators({ 
-    listPokemons
+    listPokemons, pokeCart, clearPokemon
   }, dispatch),
 });
 
